@@ -8,6 +8,15 @@ output:
   html_document: default
 ---
 
+The United States Fish and Wildlife Service (FWS) GitHub project code is provided on an
+"as is" basis and the user assumes responsibility for its use. FWS has relinquished control
+of the information and no longer has responsibility to protect the integrity, confidentiality, or
+availability of the information. Any reference to specific commercial products, processes,
+or services by service mark, trademark, manufacturer, or otherwise, does not constitute or
+imply their endorsement, recommendation or favoring by FWS. The FWS seal and logo
+shall not be used in any manner to imply endorsement of any commercial product or
+activity by FWS or the United States Government.
+
 **Kodiak Mountain Goat Resource Selection**
 
 An analysis of mountain goat resource selection on Kodiak Island, Alaska. We compared covariate values at GPS collar fixes (used) to those at available locations. We considered individual collared mountain goats as the sampling unit. For the population level analysis, we evaluated the relative probability of use using conditional logistic mixed effects models with a matched case-control design (Fortin et al. 2005, Duchesne et al. 2010). Models included a random intercept for each collared mountain goat to account for the unbalanced design and correlation among individuals and allow for population level inference. We quantify resource selection separately for summer and winter seasons. We defined the summer season as June-September and the winter season as December-April based on the typical presence of snow cover.
