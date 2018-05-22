@@ -36,21 +36,17 @@ Defines "available" fixes for standard RSF modeling by creating a 99% kernel den
 *RSFmodel.R*  
 Examines resource selection based on mixed effects logistic regression (CollarID as a random effect). Checks for covariance among the habitat covariates. Saves the resulting table as a .csv. Splits the used/available data frame into testing and training dataframes. Creates a list of terrian models, based on topography. Checks models for overdispersion. Runs AIC model selection to determine the best model. Uses this as the base model for a second set of candidate models based on habitat covariates. Runs AIC model selection to determine the best model. Checks models for overdispersion. Creates a table of parameter estimates and CIs from the top model. Adds predicted values (based on the top model) to the used/available data frame. Evaluates the goodness of fit of the best model with Hosmer-Lemeshow Goodness of Fit (GOF) test. 
 
-*RSFmodel_summer.R*
+*RSFmodel_summer.R*  
 Examines summer (June-Sept) resource selection based on mixed effects logistic regression (CollarID as a random effect). Checks for covariance among the habitat covariates. Saves the resulting table as a .csv. Splits the used/available data frame into testing and training dataframes. Creates a list of terrian models, based on topography. Checks models for overdispersion. Runs AIC model selection to determine the best model. Uses this as the base model for a second set of candidate models based on habitat covariates. Runs AIC model selection to determine the best model. Checks models for overdispersion. Creates a table of parameter estimates and CIs from the top model. Adds predicted values (based on the top model) to the used/available data frame. Evaluates the goodness of fit of the best model with Hosmer-Lemeshow Goodness of Fit (GOF) test. 
 
-*RSFmodel_winter.R*
+*RSFmodel_winter.R*  
 Examines winter (Dec-Apr) resource selection based on mixed effects logistic regression (CollarID as a random effect). Checks for covariance among the habitat covariates. Saves the resulting table as a .csv. Splits the used/available data frame into testing and training dataframes. Creates a list of terrian models, based on topography. Checks models for overdispersion. Runs AIC model selection to determine the best model. Uses this as the base model for a second set of candidate models based on habitat covariates. Runs AIC model selection to determine the best model. Checks models for overdispersion. Creates a table of parameter estimates and CIs from the top model. Adds predicted values (based on the top model) to the used/available data frame. Evaluates the goodness of fit of the best model with Hosmer-Lemeshow Goodness of Fit (GOF) test. 
 
-*RSFmaps.R*
+*RSFmaps.R*  
 Creates an RSF surface raster using the exponential equation from the top model (as determined via model selection in RSFmodel.R) and saves it. Bins the RSF surface into quantiles and saves it. Plots the raster surface.
 
-*PlotRSFSims.R*
+*PlotRSFSims.R*  
 Simulates (bootstrapped) fixed effects posterior distributions of the top model (as determined via model selection in RSFmodel.R). Plots it. Predicts values based on the top model.
-
-
-
 
 *ConditionalRSFmodel.R -- Not used*  
 Examines resource selection based on mixed effects conditional logistic regression (CollarID as a random effect). Splits the used/available data frame into testing and training dataframes. Creates a dataset of available fixes based on the average distance moved during consequetive fixes. To do this, first creates a trajectory object using the "used" GPS locations that includes the length of each move, the time interval between successive relocations and other values. Creates a table that summarized these values by CollarID. 
-
