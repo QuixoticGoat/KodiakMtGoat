@@ -1,0 +1,27 @@
+---
+title: "Maps of ATS-collared Mountain Goats"
+author: "Kodiak Refuge"
+date: "Thursday, June 09, 2016"
+output:
+  pdf_document:
+    latex_engine: xelatex
+---
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, cache=FALSE}
+library(knitr)
+read_chunk("./Analysis/Maps.R")
+```
+
+```{r, echo=FALSE, cache=TRUE}
+<<ImportFormat>>
+```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.height=11, fig.width=8.5, fig.cap="Map of all ATS fixes."}
+<<MapAll>>
+mapAll()
+```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.height=11, fig.width=8.5}
+<<MapCollars>>
+mapCollars()
+```
