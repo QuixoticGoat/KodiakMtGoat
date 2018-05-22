@@ -3,9 +3,9 @@ title: "Metadata"
 author: 'Author: McCrea Cobb'
 date: 'Last updated: 5/22/2018'
 output:
-  html_document: default
-  html_notebook: default
   pdf_document: default
+  html_notebook: default
+  html_document: default
 ---
 
 **Kodiak Mountain Goat Resource Selection**
