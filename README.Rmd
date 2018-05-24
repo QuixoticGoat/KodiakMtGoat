@@ -57,5 +57,5 @@ Creates an RSF surface raster using the exponential equation from the top model 
 *PlotRSFSims.R*  
 Simulates (bootstrapped) fixed effects posterior distributions of the top model (as determined via model selection in RSFmodel.R). Plots it. Predicts values based on the top model.
 
-*ConditionalRSFmodel.R -- Not used*  
+*ConditionalRSFmodel.R*  
 Examines resource selection based on mixed effects conditional logistic regression (CollarID as a random effect). Splits the used/available data frame into testing and training dataframes. Creates a dataset of available fixes based on the average distance moved during consequetive fixes. To do this, first creates a trajectory object using the "used" GPS locations that includes the length of each move, the time interval between successive relocations and other values. Creates a table that summarized these values by CollarID. 
