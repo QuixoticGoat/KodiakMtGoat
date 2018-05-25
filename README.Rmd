@@ -33,6 +33,17 @@ Imports and formats spatial covariate shapefiles and rasters. Scales covariates 
 *ExtractCovVelox.R*  
 Defines "available" fixes for standard RSF modeling by creating a 99% kernel density spatial polygon, using all fixes. Generates a random sample of fixes within the polygon and combines these data to the "used" GPS location dataframe, called dfRSF. Imports a raster stack of habitat covariates. Extract the covariate data from the raster stack to the used/available data. Export the result as a shapefile.
 
+*ConditionalRSFmodel.R* 
+Step 1: Examines resource selection based on mixed effects conditional logistic regression (CollarID as a random effect). To do this, it first creates a two trajectory objects using the "used" GPS locations (one for ATS collars, one for Telonics collars) that include the length of each move, the time interval between successive relocations and other values. Load a study area boundary (mask). Draws 10 random "available" steps within the study area bounday for each "used" step from a distribution of used fix step lengths and turning angles. Merges the ATS and Telonics datasets back together. Calculates the available fix coordinates from the random step lengths and turning angles. Saves the results.  
+
+Step 2: Extracts spatial covariates raster values to the used and available fixes. Loads the used/available dataframe and the raster stack with the covariates. Converts the dataframe to a spatial dataframe. Extracts the covariate values to the used/available spatial data frame and saves the results as a dataframe.  
+
+Step 3: Splits the used/available data frame into testing and training dataframes. 
+
+Step 4: Run the conditional mixed effects model selection for summer and winter. Loads the used/available "training" dataframe from Step 3. Subsets summer data. Evaluates spatial grain of the VRM and slope covariates with univariate models via delta AICc. Saves the list of models and AICc table. Using the top model from the previous step as the base model, evaluates a candidate list of terrian models via delta AICc. Saves list of models and AICc table. Repeats process for the habitat covariates. Saves list of models and AICc tables and saves the "best" summer model. Subsets winter data and repeats the steps above to determine the "best" winter model.  
+
+Step 5: Evaluate fit of the best summer and winter models using the testing data.
+
 *RSFmodel.R*  
 Examines resource selection based on mixed effects logistic regression (CollarID as a random effect). Checks for covariance among the habitat covariates. Saves the resulting table as a .csv. Splits the used/available data frame into testing and training dataframes. Creates a list of terrian models, based on topography. Checks models for overdispersion. Runs AIC model selection to determine the best model. Uses this as the base model for a second set of candidate models based on habitat covariates. Runs AIC model selection to determine the best model. Checks models for overdispersion. Creates a table of parameter estimates and CIs from the top model. Adds predicted values (based on the top model) to the used/available data frame. Evaluates the goodness of fit of the best model with Hosmer-Lemeshow Goodness of Fit (GOF) test. 
 
@@ -48,5 +59,4 @@ Creates an RSF surface raster using the exponential equation from the top model 
 *PlotRSFSims.R*  
 Simulates (bootstrapped) fixed effects posterior distributions of the top model (as determined via model selection in RSFmodel.R). Plots it. Predicts values based on the top model.
 
-*ConditionalRSFmodel.R -- Not used*  
-Examines resource selection based on mixed effects conditional logistic regression (CollarID as a random effect). Splits the used/available data frame into testing and training dataframes. Creates a dataset of available fixes based on the average distance moved during consequetive fixes. To do this, first creates a trajectory object using the "used" GPS locations that includes the length of each move, the time interval between successive relocations and other values. Creates a table that summarized these values by CollarID. 
+

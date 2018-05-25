@@ -1,8 +1,13 @@
-#######################################################################
-### Summary tables of GPS collar data for Kodiak mountain goats
-### McCrea Cobb
-#######################################################################
 
+################################################################################
+# Summary tables of GPS collar data for Kodiak mountain goats                  #
+#                                                                              #
+# Author: McCrea Cobb <mccrea_cobb@fws.gov>                                    #
+# Last modified: 5/23/2018                                                     #
+################################################################################
+
+
+#-------------------------------------------------------------------------------
 ##---- GPS.Summary.R
 
 GPS.Summary <- function(dat) {
@@ -45,9 +50,8 @@ GPS.Summary <- function(dat) {
 
 
 
-##############################################
+#-------------------------------------------------------------------------------
 ## Produce tables of output from the top models
-##############################################
 
 # Required packages:
 library(mclogit)
@@ -66,7 +70,8 @@ best.df <- tidy(best)
 best.df[, c(2:5)] <- round(best.df[ , c(2:5)], 2)
 
 # Write as a .csv:
-write.csv(best.df, "./Manuscript/Tables/ModelOutput_Summer.csv", row.names = FALSE)
+write.csv(best.df, "./Manuscript/Tables/ModelOutput_Summer.csv", 
+          row.names = FALSE)
 
 
 ###############
@@ -81,5 +86,6 @@ best.df <- tidy(best)
 best.df[, c(2:5)] <- round(best.df[ , c(2:5)], 2)
 
 # Write as a .csv:
-write.csv(best.df, "./Manuscript/Tables/ModelOutput_Winter.csv", row.names = FALSE)
+write.csv(best.df, "./Manuscript/Tables/ModelOutput_Winter.csv", 
+          row.names = FALSE)
 

@@ -1,9 +1,10 @@
 
-######################################################
-#### Import and format GPS collar data
-#### Author: McCrea Cobb
-#### Last modified: 3/23/2018
-######################################################
+################################################################################
+# Imports and formats GPS collar data for mountain goats on Kodiak Island      #
+#                                                                              #
+# Author: McCrea Cobb <mccrea.cobb@fws.gov>                                    #
+# Last modified: 5/24/2018                                                     #
+################################################################################
 
 
 ## The following functions import the ATS Globalstar and Telonics GPS collar
@@ -12,9 +13,8 @@
 
 ## ---- _ImportFormat.R
 
-
-
-### 1. Import and and format the ATS data ###
+#-------------------------------------------------------------------------------
+## 1. Import and and format the ATS data
 
 dfATS <-read.table("./Data/ATSCollarData.txt", header = TRUE, sep = ",")
 SerialNum <- read.table("./Data/SerialNum.txt", header = TRUE, sep = ",")
@@ -52,9 +52,8 @@ dfATS$Response <- 1
 dfATS$Collar <- "ATS"
 
 
-
-
-### 2. Import and format the Telonics collar data ###
+#-------------------------------------------------------------------------------
+## 2. Import and format the Telonics collar data ###
 
 dfTel13 <-read.table("./Data/Telonics2013CollarData.csv", header = TRUE, sep = ",")
 dfTel15 <-read.table("./Data/Telonics2015CollarData.csv", header = TRUE, sep = ",")
@@ -127,10 +126,10 @@ dfTel15 <- subset(dfTel15, CollarID != "IG40")
 dfTel15 <- droplevels(dfTel15)
 
 
+#-------------------------------------------------------------------------------
+## 3. Merge the ATS (collared in 2015) and Telonics 2015 data:
 
-### 3. Merge the ATS (collared in 2015) and Telonics 2015 data:
 df <- merge(dfATS, dfTel15, all = T)
-
 
 # Subset df to dates after collaring:
 df <- subset(df, Date >= "2015-08-01")
@@ -158,7 +157,6 @@ rm(junk)  # clean up
 # Clean up some of the 2013 Telonics data
 junk <- subset(dfTel13, CollarID == "IG05" & Date > "2014-10-04 00:00:00")  # Remove fixes after it was shot
 dfTel13 <- dfTel13[!row.names(dfTel13) %in% row.names(junk), ]
-
 
 
 
@@ -245,16 +243,15 @@ df$season <- ifelse (month(df$Date) > 11, "winter",
 df <- df[order(as.character(df$CollarID), as.POSIXct(df$Date)), ]
 
 
-##################
-# Save it:
+#-------------------------------------------------------------------------------
+## 4. Save it
+
 save(df, file="./Data/Rdata/df.Rdata", compress="gzip")
-###################
 
 
-
-
-
+#-------------------------------------------------------------------------------
 ## 5. Create a SpatialPointsDataFrame from the merged df:
+
 library(sp)
 
 dfSp <- SpatialPointsDataFrame(df[ , c("Long", "Lat")], df,

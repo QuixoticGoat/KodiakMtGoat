@@ -1,5 +1,11 @@
-###### Effects plots
 
+################################################################################
+# Creates effects plots based on estimates from the "best" conditional
+# mixed effects models
+#
+# Author: McCrea Cobb <mccrea_cobb@fws.gov>
+# Last modified: 5/24/2018
+################################################################################
 
 # Create prediction dataset
 rm(df.pr)

@@ -1,23 +1,29 @@
 
-#################################################################
-### Conditional RSF Model for GPS collar data
-### Author: McCrea Cobb
-### Last modified: 9/15/2017
-#################################################################
+################################################################################
+# Creates "available" fixes based on step length and turning angles of "used"  #
+# GPS collar fixes. Extracts covariates from a rasterstack to the              #
+# used/available dataframe.Performs conditional RSF model selection via AICc   #
+# to quantify resource selection.                                              #
+#                                                                              #
+# Author: McCrea Cobb <mccrea.cobb@fws.gov>                                    #
+# Last modified: 5/24/2018                                                     #
+################################################################################
 
 ## ---- 4_ConditionalRSFmodel.R
+
 
 # Load the GPS collar data
 load("./Data/Rdata/df.Rdata")
 
 
 
-#############################################################################
+#-------------------------------------------------------------------------------
 ## STEP 1: Create a dataset of "available" points. 10 points associated with
 ## each GPS fix.
-#############################################################################
 
-## A. Create a traj object for each CollarID. Summarize the movements of each animal.
+
+# A. Create a traj object for each CollarID. Summarize the movements of 
+#    each animal.
 
 get.traj <- function(df) {
   ## Converts a df of GPS fixes to a trajectory object
@@ -90,12 +96,8 @@ save(data = df, file = "./Data/Rdata/df.ua.Rdata")
 
 
 
-
-
-###############################################################################
-### STEP 2: Extract spatial covariate raster values to used and available points
-###############################################################################
-
+#-------------------------------------------------------------------------------
+## STEP 2: Extract spatial covariate raster values to used and available points
 
 ###### Training data
 
@@ -122,9 +124,9 @@ save(df, file="./Data/RData/df.cond.RData", compress="gzip")
 
 
 
-##############################################################################
+#------------------------------------------------------------------------------
 ## STEP 3. Split data into testing/training datasets
-##############################################################################
+
 
 test.train.fn <- function(df, p) {
   ## Function to split df into a list of testing and training dfs
@@ -150,9 +152,10 @@ save(data = dfTestTrain, file = "./Data/Rdata/df.testtrain.Rdata",
 
 
 
-###########################################################################
-## STEP 4: Run the conditional mixed effects logistic regression  #########
-###########################################################################
+#------------------------------------------------------------------------------
+## STEP 4: Run the conditional mixed effects logistic regression 
+
+
 #library(survival)  # For clogit function - Conditional logistic regression
 
 # Load the data:
@@ -340,9 +343,6 @@ load(file = "./Data/Rdata/mod_summer_final.Rdata")
 
 
 
-
-
-
 ################
 ## B. Winter
 ################
@@ -422,9 +422,8 @@ rm(mod, Covariate)
 
 
 
-### STEP 3. HABITAT MODEL: Create a candidate list of mixed effects
-###    logistic models of habitat covariates
-
+## STEP 3. HABITAT MODEL: Create a candidate list of mixed effects
+## logistic models of habitat covariates
 
 ## A) First, select the best scale (30, 100, 500, 100 m) for each habitat variable:
 
@@ -518,12 +517,9 @@ save(best, file = "./Data/Rdata/mod_winter_final.Rdata", compress = "gzip")
 
 
 
+#------------------------------------------------------------------------------
+## STEP 5 Evaluate fit of the best model with the testing data
 
-
-
-########################################
-## Evaluate model to the testing data
-#######################################
 
 # Load the testing data:
 load(file="./Data/RData/df.ua.RData")
@@ -538,6 +534,4 @@ df$predicted <- predict(best, newdata = df, type = "response")
 
 
 plot(df$case ~ df$predicted)
-
-
 

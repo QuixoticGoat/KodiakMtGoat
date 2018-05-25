@@ -1,21 +1,23 @@
-######################################################################
-### Model Validation
+################################################################################
+# Model Validation
 
-## Use the testing data to validate the accuracy of the
-## conditional logistic model by evaluating the correlation
-## between the frequency of occurrance of the testing data
-## and the relative RSF score using Spearman's Rank correlation
-## statistic (Boyce et al. 2002).
-#####################################################################
+# Uses the testing data to validate the accuracy of the
+# conditional logistic model by evaluating the correlation
+# between the frequency of occurrance of the testing data
+# and the relative RSF score using Spearman's Rank correlation
+# statistic (Boyce et al. 2002).
+#
+# Author: McCrea Cobb <mccrea_cobb@fws.gov>
+# Last modified: 5/24/2018
+################################################################################
 
 
-# Required packages
+# Required packages:
 library(raster)
 
 
-#######################
-####### Summer ########
-#######################
+#-------------------------------------------------------------------------------
+## Summer
 
 # Load the testing data
 load(file="./Data/RData/df.ua.RData")
@@ -51,11 +53,8 @@ hist(df.a$rsfbin)
 
 
 
-
-
-####################
-##### Winter #######
-####################
+#-------------------------------------------------------------------------------
+## Winter
 
 # Load the testing data
 load(file="./Data/RData/df.ua.RData")

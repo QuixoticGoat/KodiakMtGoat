@@ -1,19 +1,12 @@
-
-################################################################################
-# Creates spatial covariates for mountain goat habitat selection at Kodiak
-# Island, Alaska.
-#
-# Author: McCrea Cobb
-# Created: 5/10/2017
-# Last modified: 5/24/2018
-################################################################################
-
+## Create the spatial covariates for mountain goat habitat selection
+## Author: McCrea Cobb
+## Created: 5/10/2017
 
 ## ---- 1_FormatSpatialCov.R
 
 
-#-------------------------------------------------------------------------------
-## STEP 1. Import and format spatial covariate data ###
+
+### STEP 1. Import and format spatial covariate data ###
 
 library(rgdal)
 library(maptools)
@@ -97,20 +90,22 @@ writeRaster(x = lcc, filename = "Data/GIS/LandCover/lcc.grd",
 
 
 
-#-------------------------------------------------------------------------------
-## STEP 2: Format LCC raster as binary present/absent (0/1)
 
-Format.LCC <- function() {
+### STEP 2: FORMAT SPATIAL COVARIATES AT DIFFERENT SPATIAL SCALES
 
-  ## Create binomial rasters of each habitat class from the lcc raster. Save each
-  ## as a .grd file.
+## Create binomial rasters of each habitat class from the lcc raster,
+## based on the mean value within 50m radius of each pixel cell.
 
-  require(snow)
-  require(parallel)
-  require(raster)
+# First, need to define focal weight (50 m) for moving window (focal()):
+
+Format.LCC <- function(radius) {
 
   # Allow for parallel processing to speed things up:
-  beginCluster(detectCores() - 1)
+  require(snow)
+  require(parallel)
+  beginCluster( detectCores() - 1)
+
+  require(raster)
 
   lcc <- raster("Data/GIS/LandCover/lcc.grd")
   elevS <- raster("Data/GIS/Elevation/elevS.grd")
@@ -121,231 +116,159 @@ Format.LCC <- function() {
   vrmS <- raster("Data/GIS/VRM/vrmS.grd")
   sriS <- raster("Data/GIS/SRI/sriS.grd")
 
-  # Create the rasters
+  # Define the focal weight (radius around fix location to average habitat values)
+  fw <- focalWeight(lcc, radius, "circle")
+
+  # Then, create the rasters:
 
   # Forest:
   message("Working on Forest layer")
   lcc1 <- lcc
   lcc1[lcc1 > 1] <- 0
+  lcc1 <- focal(lcc1, w = fw, fun = "mean", na.rm = T) # mean value within "fw"
   lcc1@data@names <- "forest"
   writeRaster(x = lcc1, filename = paste("Data/GIS/LandCover/Forest",
-                                         ".grd", sep = ""),
+                                         radius,".grd", sep = ""),
               format = "raster",
               progress = "text",
               overwrite = T)
-  message("Saved!")
 
   # Shrub:
   message("Working on Shrub layer")
   lcc2 <- lcc
   lcc2[lcc2 != 2] <- 0
   lcc2[lcc == 2] <- 1
+  lcc2 <- focal(lcc2, w = fw, fun = "mean", na.rm = T)
   lcc2@data@names <- "shrub"
   writeRaster(x = lcc2, filename = paste("Data/GIS/LandCover/Shrub",
-                                         ".grd", sep = ""),
+                                         radius,".grd", sep = ""),
               format = "raster",
               progress = "text",
               overwrite = T)
-  message("Saved!")
 
   # Tundra/Heath:
   message("Working on Tundra/Heath layer")
   lcc3 <- lcc
   lcc3[lcc3 != 3] <- 0
   lcc3[lcc3 == 3] <- 1
+  lcc3 <- focal(lcc3, w = fw, fun = "mean", na.rm = T)
   lcc3@data@names <- "tundraHeath"
   writeRaster(x = lcc3, filename = paste("Data/GIS/LandCover/TundraHeath",
-                                         ".grd", sep = ""),
+                                         radius,".grd", sep = ""),
               format = "raster",
               progress = "text",
               overwrite = T)
-  message("Saved!")
 
   # Meadow:
   message("Working on Meadow layer")
   lcc4 <- lcc
   lcc4[lcc4 != 4] <- 0
   lcc4[lcc4 == 4] <- 1
+  lcc4 <- focal(lcc4, w = fw, fun = "mean", na.rm = T)
   lcc4@data@names <- "meadow"
   writeRaster(x = lcc4, filename = paste("Data/GIS/LandCover/Meadow",
-                                         ".grd", sep = ""),
+                                         radius,".grd", sep = ""),
               format = "raster",
               progress = "text",
               overwrite = T)
-  message("Saved!")
 
   # Water:
   message("Working on Water layer")
   lcc5 <- lcc
   lcc5[lcc5 != 5] <- 0
   lcc5[lcc5 == 5] <- 1
+  lcc5 <- focal(lcc5, w = fw, fun = "mean", na.rm = T)
   lcc5@data@names <- "water"
   writeRaster(x = lcc5, filename = paste("Data/GIS/LandCover/Water",
-                                         ".grd", sep = ""),
+                                         radius,".grd", sep = ""),
               format = "raster",
               progress = "text",
               overwrite = T)
-  message("Saved!")
 
   # Snow/Water:
   message("Working on Snow layer")
   lcc6 <- lcc
   lcc6[lcc6 != 6] <- 0
   lcc6[lcc6 == 6] <- 1
+  lcc6 <- focal(lcc6, w = fw, fun = "mean", na.rm = T)
   lcc6@data@names <- "snowWater"
   writeRaster(x = lcc6, filename = paste("Data/GIS/LandCover/SnowWater",
-                                         ".grd", sep = ""),
+                                         radius,".grd", sep = ""),
               format = "raster",
               progress = "text",
               overwrite = T)
-  message("Saved!")
 
   # Rock:
   message("Working on Rock layer")
   lcc7 <- lcc
   lcc7[lcc7 != 7] <- 0
   lcc7[lcc7 == 7] <- 1
+  lcc7 <- focal(lcc7, w = fw, fun = "mean", na.rm = T)
   lcc7@data@names <- "rock"
   writeRaster(x = lcc7, filename = paste("Data/GIS/LandCover/Rock",
-                                         ".grd", sep = ""),
+                                         radius,".grd", sep = ""),
               format = "raster",
               progress = "text",
               overwrite = T)
-  message("Saved!")
-
-  # Done. Free up cores and memory:
-  endCluster()
-  removeTmpFiles(h = 0)
-
-  message("All done!")
-}
-
-# Run it:
-Format.LCC()
 
 
+  elevS.F <- focal(elevS, w = fw, fun = "mean", na.rm = T)
+  elevS.F@data@names <- "Elevation"
+  writeRaster(x = elevS.F, filename = paste("Data/GIS/Elevation/ElevS.F",
+                                            radius,".grd", sep = ""),
+              format = "raster",
+              progress = "text",
+              overwrite = T)
 
-#-------------------------------------------------------------------------------
-## STEP 3: Save spatial covariates together as a raster stack
 
-raster.stack <- function() {
-
-  require(parallel)
-  require(raster)
-  require(rasterVis)
-
-  # Allow for parallel processing to speed things up:
-  beginCluster(detectCores() - 1)
-
-  elevS <- raster("Data/GIS/Elevation/elevS.grd")
-  elev2S <- raster("Data/GIS/Elevation/elev2S.grd")
-  slopeS <- raster("Data/GIS/Slope/slopeS.grd")
-  slope2S <- raster("Data/GIS/Slope/slope2S.grd")
-  aspectS <- raster("Data/GIS/Aspect/aspectS.grd")
-  vrmS <- raster("Data/GIS/VRM/vrmS.grd")
-  sriS <- raster("Data/GIS/SRI/sriS.grd")
-  forest <- raster("Data/GIS/LandCover/Forest.grd")
-  shrub <- raster("Data/GIS/LandCover/Shrub.grd")
-  tundraHeath <- raster("Data/GIS/LandCover/TundraHeath.grd")
-  meadow <- raster("Data/GIS/LandCover/Meadow.grd")
-  water <- raster("Data/GIS/LandCover/Water.grd")
-  snowWater <- raster("Data/GIS/LandCover/SnowWater.grd")
-  rock <- raster("Data/GIS/LandCover/Rock.grd")
-
-  # Create a raster stack:
-  r <- stack(elevS, elev2S, slopeS, slope2S, aspectS, vrmS, forest, shrub,
-             tundraHeath, meadow, water, snowWater, rock)
-
-  # Save the final raster stack as a grid (.grd) file:
-  writeRaster(r, "./Data/GIS/RasterStack/Covar.grd",
+  # Save the final stacked raster as a grid:
+  message("Saving raster stack")
+  writeRaster(r, paste("./Data/GIS/RasterStack/LCC", radius, ".grd", sep = ""),
               format = "raster",
               options = c("INTERLEAVE=BAND"),
               progress = "text",
               prj = T,
               overwrite = T)
 
+  # Done. Free up cores:
+  endCluster()
+
   removeTmpFiles(h = 0)
-
+  message("Done!")
 }
 
-# Run it:
-raster.stack()
+
+Format.LCC(50)
 
 
-#-------------------------------------------------------------------------------
-## STEP 4. Extract the focal mean pixel values for each covariate by 100, 500 
-## and 1000 m.
-
-library(raster)
-
-# Load the covariate raster stack:
-Covar.30 <- stack("./Data/GIS/RasterStack/Covar.grd")
-
-# Define the focal weight (change as needed..)
-fw <- focalWeight(Covar.30, 100, type="circle")
-
-# Function to run focal() across all layers in a rasterstack:
-multiFocal <- function(x, fw, ...) {
-  library(raster)
-
-  if(is.character(x)) {
-    x <- brick(x)
-  }
-
-  # The function to be applied to each individual layer
-  fun <- function(ind, x, w, ...){
-    focal(x[[ind]], w=fw, na.rm=TRUE)
-  }
-
-  n <- seq(nlayers(x))
-  list <- lapply(X=n, FUN=fun, x=x, w=fw, ...)
-
-  out <- stack(list)
-  return(out)
-}
-
-# Run it:
-Covar.100  <- multiFocal(x=Covar.30, fw)
 
 
-# Rename the layers for each:
-names <- names(Covar.30)
-names(Covar.30) <- paste0(names, ".30")
-names(Covar.100) <- paste0(names, ".100")
-names(Covar.500) <- paste0(names, ".500")
-names(Covar.1000) <- paste0(names, ".1000")
 
-# Save them:
-writeRaster(Covar.30, "./Data/GIS/Rasterstack/Covar.30.grd",
-            format = "raster",
-            options = c("INTERLEAVE=BAND"),
-            progress = "text",
-            prj = T,
-            overwrite = T)
-writeRaster(Covar.100, "./Data/GIS/Rasterstack/Covar.100.grd",
-            format = "raster",
-            options = c("INTERLEAVE=BAND"),
-            progress = "text",
-            prj = T,
-            overwrite = T)
-writeRaster(Covar.500, "./Data/GIS/Rasterstack/Covar.500.grd",
-            format = "raster",
-            options = c("INTERLEAVE=BAND"),
-            progress = "text",
-            prj = T,
-            overwrite = T)
-writeRaster(Covar.1000, "./Data/GIS/Rasterstack/Covar.1000.grd",
-            format = "raster",
-            options = c("INTERLEAVE=BAND"),
-            progress = "text",
-            prj = T,
-            overwrite = T)
+## Save spatial covariates at a raster stack
+## (One stack for each focal weight area)
 
-# Combine into a single raster stack:
-Covar.all <- stack(Covar.30, Covar.100, Covar.500, Covar.1000)
+## Open the final spatial covariate raster layers:
+elevS <- raster("Data/GIS/Elevation/elevS.grd")
+elev2S <- raster("Data/GIS/Elevation/elev2S.grd")
+slopeS <- raster("Data/GIS/Slope/slopeS.grd")
+slope2S <- raster("Data/GIS/Slope/slope2S.grd")
+aspectS <- raster("Data/GIS/Aspect/aspectS.grd")
+vrmS <- raster("Data/GIS/VRM/vrmS.grd")
+sriS <- raster("Data/GIS/SRI/sriS.grd")
+forest <- raster("Data/GIS/LandCover/Forest.grd")
+shrub <- raster("Data/GIS/LandCover/Shrub.grd")
+tundraHeath <- raster("Data/GIS/LandCover/TundraHeath.grd")
+meadow <- raster("Data/GIS/LandCover/Meadow.grd")
+water <- raster("Data/GIS/LandCover/Water.grd")
+snowWater <- raster("Data/GIS/LandCover/SnowWater.grd")
+rock <- raster("Data/GIS/LandCover/Rock.grd")
 
-# Save it:
-writeRaster(Covar.all, "./Data/GIS/Rasterstack/Covar.all.grd",
+require(rasterVis)
+r <- stack(elevS, elev2S, slopeS, slope2S, aspectS, vrmS, forest, shrub,
+           tundraHeath, meadow, water, snowWater, rock)
+
+# Save the final stacked raster as a grid:
+writeRaster(r, "./Data/GIS/RasterStack/Covar.grd",
             format = "raster",
             options = c("INTERLEAVE=BAND"),
             progress = "text",
@@ -353,13 +276,23 @@ writeRaster(Covar.all, "./Data/GIS/Rasterstack/Covar.all.grd",
             overwrite = T)
 
 
-#-------------------------------------------------------------------------------
-## STEP 5. Import the raster stack containing all the covariates and save
-## a plot of it:
 
-Covar.all <- stack("./Data/GIS/RasterStack/Covar.all.grd")
+# Import the raster stack containing all the covariates:
+Covar <- stack("./Data/GIS/RasterStack/Covar.grd")
 
+
+
+
+## Save a plot of the final raster stack:
 pdf("Plots/Maps/Covariates.pdf", width = 7, height = 4, title = "Covariates")
 plot(Covar)
 dev.off()
 
+
+# Clean up:
+rm(r, elevS, elev2S, slopeS, slope2S, aspectS, vrmS, forest, shrub, tundraHeath, meadow, water,
+   snowWater, rock, elev, elev2, aspect, aspect30,aspectCos, lcc, lccJunk, ned, slope,
+   slope2, vrm)
+
+# Free up memory:
+removeTmpFiles(h = 0)

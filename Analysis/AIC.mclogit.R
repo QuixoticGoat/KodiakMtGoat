@@ -1,4 +1,11 @@
-# Contributed by Nic Elliot <nic_elliot@yahoo.co.uk>
+################################################################################
+# These are two functions that takes an mclogit object created from mclogit::mclogit()
+# and outputs either an AIC (in the case of AIC.mclogit()) or BIC (BIC)value.
+#
+# Forked by McCrea Cobb <mccrea_cobb@fws.gov> from GitHub 
+# Original author: Nic Elliot <nic_elliot@yahoo.co.uk>
+################################################################################
+
 
 AIC.mclogit <- function(object,...,k=2){
 

@@ -1,16 +1,17 @@
-#################################################################
-#### Create RSF maps from model output
-#### Author: McCrea Cobb
-#### Last modified: 9/15/2017
-#################################################################
+
+################################################################################
+# Creates maps of an RSF surface from model output                             #
+#                                                                              #
+# Author: McCrea Cobb <mccrea_cobb@fws.gov                                     #
+# Last modified: 9/15/2017                                                     #
+################################################################################
 
 ##---- RSFmaps.R
 
 library(raster)
 
-###############
-# Load the best model and the raster stack of the spatial covariates
-###############
+#-------------------------------------------------------------------------------
+## Load the best model and the raster stack of the spatial covariates
 
 Covar.all <- stack("./Data/GIS/RasterStack/Covar.all.grd")
 
@@ -50,16 +51,13 @@ calc.RSF.surface <- function(mod, cov.stack=Covar.all) {
   return(out.RSF.scaled)
 }
 
-##############
-# Run it
-##############
 
+# Run it
 RSFsurface <- calc.RSF.surface(best)
 
 
-###############
-# Save the summer and winter RSFs
-###############
+#-------------------------------------------------------------------------------
+## Save the summer and winter RSFs
 
 writeRaster(RSFsurface, "./Data/GIS/RSFsurface/rsfwinter.grd",
             format = "raster",
@@ -76,11 +74,9 @@ writeRaster(RSFsurface, "./Data/GIS/RSFsurface/rsfwinter.tif",
             overwrite = T)
 
 
+#-------------------------------------------------------------------------------
+## Bin the RSF surface
 
-
-######################
-# Bin the RSF surface
-######################
 
 quantile.bin <- function(x,n.bins = 10, n.transparent = round(n.bins * 0.6)) {
   q <- quantile(x,
@@ -112,10 +108,9 @@ writeRaster(RSFsurfaceBin, "./Data/GIS/RSFsurface/rsfBinsummer7to10.tif",
             overwrite = T)
 
 
-
-###########################
+#-------------------------------------------------------------------------------
 ## Plot the RSF surface map
-###########################
+
 library(raster)
 kodiak <- shapefile("./Data/GIS/KodiakBound/kodiak_island")
 

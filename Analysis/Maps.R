@@ -1,3 +1,4 @@
+
 ################################################################################
 # mapAll() is a function to produce a map of all individual (in this case      #
 # mountain goats on Kodiak) in a dataset. Requires internet connectivity to    #
