@@ -15,11 +15,10 @@
 #-------------------------------------------------------------------------------
 ## STEP 1. Import and format spatial covariate data ###
 
-library(rgdal)
-library(maptools)
-library(raster)
-library(rasterVis)
-library(sp)
+# #Required packages:
+packages <- c("rgdal", "maptools", "raster", "rasterVis", "sp")
+lapply(packages, require, character.only = TRUE)
+
 
 ## Shapefile of study area boundary (Kodiak Island)
 StudyArea <- readOGR(dsn = "Data/GIS/KodiakBound/kodiak_island.shp")

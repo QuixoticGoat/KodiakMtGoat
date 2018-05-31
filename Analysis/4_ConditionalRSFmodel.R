@@ -105,8 +105,8 @@ save(data = df, file = "./Data/Rdata/df.ua.Rdata")
 load("./Data/RData/df.ua.RData")
 
 ## Import the raster stack:
-require(rgeos)
-library(raster)
+require(rgeos); require(raster)
+
 Covar.all <- stack("./Data/GIS/RasterStack/Covar.all.grd")
 
 # Create a spatial df of the df.ua dataframe:
@@ -156,8 +156,6 @@ save(data = dfTestTrain, file = "./Data/Rdata/df.testtrain.Rdata",
 ## STEP 4: Run the conditional mixed effects logistic regression 
 
 
-#library(survival)  # For clogit function - Conditional logistic regression
-
 # Load the data:
 load("./Data/RData/df.testtrain.Rdata")
 
@@ -188,7 +186,8 @@ mod[[6]] <- mclogit(cbind(case, strata)~vrmS.100, random=~1|id, data=df, control
 mod[[7]] <- mclogit(cbind(case, strata)~vrmS.500, random=~1|id, data=df, control = mclogit.control(epsilon = 1e-03, maxit = 100))
 mod[[8]] <- mclogit(cbind(case, strata)~vrmS.1000, random=~1|id, data=df, control = mclogit.control(epsilon = 1e-03, maxit = 100))
 
-Covariate <-  c("slopeS.30", "slopeS.100", "slopeS.500", "slopeS.1000", "vrmS.30", "vrmS.100", "vrmS.500", "vrmS.1000")
+Covariate <-  c("slopeS.30", "slopeS.100", "slopeS.500", "slopeS.1000", 
+                "vrmS.30", "vrmS.100", "vrmS.500", "vrmS.1000")
 
 require(plyr)
 mod[["aic"]] <- ldply(mod, function(x) AIC.mclogit(x))
