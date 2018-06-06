@@ -140,9 +140,6 @@ writeRaster(ndvi.1000, "./Data/GIS/MODIS/ndvi/Rasterbrick/ndvi.1000.grd",
 ndvi.250 <- stack("./Data/GIS/MODIS/ndvi/Rasterbrick/ndvi.250.grd")
 ndvi.500 <- stack("./Data/GIS/MODIS/ndvi/Rasterbrick/ndvi.500.grd")
 ndvi.1000 <- stack("./Data/GIS/MODIS/ndvi/Rasterbrick/ndvi.1000.grd")
-ndvi.ls <- list("ndvi.250" = ndvi.250, 
-                "ndvi.500" = ndvi.500, 
-                "ndvi.1000" = ndvi.1000)
 
 MonthlyNDVI <- function(r) {
   # r = a rasterstack of ndvi values
@@ -180,9 +177,6 @@ MonthlyNDVI <- function(r) {
   message("Done!")
 }
 
-
-lapply(ndvi.ls, MonthlyNDVI)
-
 MonthlyNDVI(ndvi.250)
 MonthlyNDVI(ndvi.500)
 MonthlyNDVI(ndvi.1000)
@@ -196,13 +190,16 @@ library(MODIStsp)
 
 ## Load the ndvi:
 ndvi.250.m <- stack("./Data/GIS/MODIS/ndvi/Rasterbrick/ndvi.250.m.grd")
-
+ndvi.500.m <- stack("./Data/GIS/MODIS/ndvi/Rasterbrick/ndvi.250.m.grd")
+ndvi.100.m <- stack("./Data/GIS/MODIS/ndvi/Rasterbrick/ndvi.250.m.grd")
 
 ## Load some test GPS collar data (100 rows), create an $ym value (YearMonth)
 load("./Data/RData/df.ua.RData")
-df <- subset(df.ua, case == 1)
-df <- df[101:350, ]
+df <- df.ua
+# df <- subset(df, case == 1)
+# df <- df[101:350, ]
 df$ym <- format(df$date, format = "%Y%m")
+df <- subset(df, date > "2013-07-01 00:00:00") # remove June '13 fixes
 rm(df.ua)
 
 # Convert to a spatial df:
@@ -212,87 +209,28 @@ df <- SpatialPointsDataFrame(df[ ,c("utmE", "utmN")], df,
 # Split the spatial df by yearmonth
 df.spl <- split(df, df$ym)
 
-
-df$ndvi250 <- unsplit(lapply(df.spl, function(x) {
+# Extract the values to each fix (TAKES A WHILE..):
+df$ndvi.250 <- unsplit(lapply(df.spl, function(x) {
     i <- paste("ndvi_", x$ym, sep = "")
     f <- extract(ndvi.250.m[[i]], x)
     f <- f[,1]
   }), df$ym)
 
+df$ndvi.500 <- unsplit(lapply(df.spl, function(x) {
+  i <- paste("ndvi_", x$ym, sep = "")
+  f <- extract(ndvi.500.m[[i]], x)
+  f <- f[,1]
+}), df$ym)
 
+df$ndvi.1000 <- unsplit(lapply(df.spl, function(x) {
+  i <- paste("ndvi_", x$ym, sep = "")
+  f <- extract(ndvi.1000.m[[i]], x)
+  f <- f[,1]
+}), df$ym)
+
+save(df, file = "./Data/RData/df.ua.sp.RData")
 
 #-------------------------------------------------------------------------------
 ## SANDBOX ###
-
-
-
-
-#-------------------------------------------------------------------------------
-## Calculate the sum of rain values by month
-## https://stackoverflow.com/questions/36722492/conditionally-extract-data-from-a-raster-stack-data-based-on-values-in-a-spatial
-
-rain_sum <- unsplit(lapply(df.spl, function(x) {
-  # current year
-  y <- as.numeric(substr(x$ym, 1, 4))
-  # current month
-  m <- as.numeric(substr(x$ym, 5, 6))
-  # if month is after Oct, start from that year's Oct
-  # if month is before Oct, start from previous year's Oct
-  if(m < 11) y <- y-1
-  start_date <- as.Date(sprintf('%s/10/01', y))
-  # if start_date is earlier than first time slice, reset to first time slice
-  start_date <- max(min(as.Date(sub('rain', '01', names(rain.250.m)), '%d%Y%m')), 
-                    start_date)
-  end_date <- as.Date(paste0(x$date, '01'), '%Y%m%d')
-  # Sequence of dates to sum over
-  i <- format(seq(start_date, end_date, by='month'), 'rain%Y%m')
-  # Extract values
-  extract(rain.250.m[[i]], x)
-}), df$ym)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#
-#
-# for (i in 1:nrow(df)) {
-#   subset(df, which(getZ(ndvi.250.m) == mydate))
-#   if(any(format(df[[i]]$Date, format = "%Y%m") == getZ(ndvi.250.m[[i]])))  {
-#     df$ndvi <- extract(ndvi.250.m, df[, c("utmE", "utmN")],
-#                       method = "simple",
-#                       df = T) ; beepr::beep(4)
-#   }
-# }
-
-
-# foo <- MODIStsp_extract(ndvi.250.m, df, FUN = "mean", out_format = "dframe")
-
-
-## Extract then reshape then merge
-library(reshape2)
-dfTemp <- extract(ndvi.250.m, df[, c("utmE", "utmN")],
-                  method = "simple",
-                  df = T) ; beepr::beep(4)
-dfTemp <- melt(dfTemp, id = "ID")
-
-# Create a start and end date:
-dfTemp$DateStart <- paste0(dfTemp$variable, "01")
-dfTemp$DateStart <- as.Date(substr(dfTemp$DateStart,  6, 16), format = "%Y%m%d")
-dfTemp$DateEnd <- dfTemp$DateStart + days_in_month(dfTemp$DateStart) - 1
 
 
