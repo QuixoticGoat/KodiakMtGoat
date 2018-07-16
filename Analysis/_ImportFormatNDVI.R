@@ -181,56 +181,74 @@ MonthlyNDVI(ndvi.250)
 MonthlyNDVI(ndvi.500)
 MonthlyNDVI(ndvi.1000)
 
+
 #-------------------------------------------------------------------------------
 ## Extract data from each matching NDVI to each GPS collar fix
 
-
-library(MODIStsp)
-
-
 ## Load the ndvi:
 ndvi.250.m <- stack("./Data/GIS/MODIS/ndvi/Rasterbrick/ndvi.250.m.grd")
-ndvi.500.m <- stack("./Data/GIS/MODIS/ndvi/Rasterbrick/ndvi.250.m.grd")
-ndvi.100.m <- stack("./Data/GIS/MODIS/ndvi/Rasterbrick/ndvi.250.m.grd")
+ndvi.500.m <- stack("./Data/GIS/MODIS/ndvi/Rasterbrick/ndvi.500.m.grd")
+ndvi.1000.m <- stack("./Data/GIS/MODIS/ndvi/Rasterbrick/ndvi.1000.m.grd")
 
-## Load some test GPS collar data (100 rows), create an $ym value (YearMonth)
-load("./Data/RData/df.ua.RData")
-df <- df.ua
-# df <- subset(df, case == 1)
-# df <- df[101:350, ]
-df$ym <- format(df$date, format = "%Y%m")
-df <- subset(df, date > "2013-07-01 00:00:00") # remove June '13 fixes
-rm(df.ua)
 
-# Convert to a spatial df:
-df <- SpatialPointsDataFrame(df[ ,c("utmE", "utmN")], df,
-                             proj4string = CRS("+proj=utm +zone=5 +datum=NAD83"))
+loadit <- function() {
+  ## Load some test GPS collar data (100 rows), create an $ym value (YearMonth)
+  load("./Data/RData/df.ua.RData")
+  df <- df.ua
+  df$ym <- format(df$date, format = "%Y%m")
+  df <- subset(df, date > "2013-07-01 00:00:00") # remove June '13 fixes
+  # df <- df[1:100,]  # Take just the first 100 rows...
+  rm(df.ua)
+  
+  df <- df[, c("utmE", "utmN", "ym")]
+  # Convert to a spatial df:
+  df <- SpatialPointsDataFrame(df[ ,c("utmE", "utmN")], df,
+                               proj4string = CRS("+proj=utm +zone=5 +datum=NAD83"))
+  df.spl <- split(df, df$ym)  # Split the spatial df by yearmonth
 
-# Split the spatial df by yearmonth
-df.spl <- split(df, df$ym)
+  rm(df)
+}
 
+
+## NDVI.250
+start.time <- Sys.time() # Start time
+loadit()  # Load the list of spatial dataframes
 # Extract the values to each fix (TAKES A WHILE..):
-df$ndvi.250 <- unsplit(lapply(df.spl, function(x) {
-    i <- paste("ndvi_", x$ym, sep = "")
-    f <- extract(ndvi.250.m[[i]], x)
-    f <- f[,1]
-  }), df$ym)
+ndvi.250 <- data.frame("ndvi.250" = unsplit(lapply(df.spl, function(x) {
+  i <- paste("ndvi_", x$ym, sep = "")
+  f <- raster::extract(ndvi.250.m[[i]], x)
+}), df$ym))
+end.time <- Sys.time()  # End time
+end.time-start.time  # Duration
+save(ndvi.250, file = "./Data/RData/df.ndvi.250.RData")
 
-df$ndvi.500 <- unsplit(lapply(df.spl, function(x) {
+## NDVI.500
+start.time <- Sys.time() # Start time
+loadit()  # Load the list of spatial dataframes
+ndvi.500 <- data.frame("ndvi.500" = unsplit(lapply(df.spl, function(x) {
   i <- paste("ndvi_", x$ym, sep = "")
   f <- extract(ndvi.500.m[[i]], x)
   f <- f[,1]
-}), df$ym)
+}), df$ym))
+end.time <- Sys.time()  # End time
+end.time-start.time  # Duration
 
-df$ndvi.1000 <- unsplit(lapply(df.spl, function(x) {
+save(ndvi.500, file = "./Data/RData/df.ndvi.500.RData")
+
+## NDVI.1000
+start.time <- Sys.time() # Start time
+loadit()  # Load the list of spatial dataframes
+ndvi.1000 <- unsplit(lapply(df.spl, function(x) {
   i <- paste("ndvi_", x$ym, sep = "")
   f <- extract(ndvi.1000.m[[i]], x)
   f <- f[,1]
 }), df$ym)
+save(ndvi.1000, file = "./Data/RData/df.ndvi.1000.RData")
+end.time <- Sys.time()  # End time
+end.time-start.time  # Duration
 
-save(df, file = "./Data/RData/df.ua.sp.RData")
-
-#-------------------------------------------------------------------------------
-## SANDBOX ###
-
+load("./Data/RData/df.ndvi.250.RData")
+load("./Data/RData/df.ndvi.500.RData")
+load("./Data/RData/df.ndvi.1000.RData")
+ndvi <- cbind(ndvi.250, ndvi.500, ndvi.1000)  # Combine them
 
