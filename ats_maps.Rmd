@@ -1,7 +1,6 @@
 ---
 title: "Maps of ATS-collared Mountain Goats"
 author: "Kodiak Refuge"
-date: "Thursday, June 09, 2016"
 output:
   pdf_document:
     latex_engine: xelatex
@@ -9,7 +8,7 @@ output:
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, cache=FALSE}
 library(knitr)
-read_chunk("./Analysis/Maps.R")
+read_chunk("./code/map_fixes.R")
 ```
 
 ```{r, echo=FALSE, cache=TRUE}
