@@ -26,3 +26,8 @@ vignettes/*.pdf
 rsconnect/
 .Rproj.user
 data/
+resources/
+output/
+manuscript/
+arcmap/
+kodiak_mtgoat_rsf.Rproj
