@@ -16,7 +16,7 @@
 #-------------------------------------------------------------------------------
 ## 1. Import and and format the ATS data
 
-dfATS <-read.table("./data/raw/ats/ATSCollarData.txt", header = TRUE, sep = ",")
+dfATS <-read.table("./data/raw/ats/Cumulative_D8208_20190429210216.txt", header = TRUE, sep = ",")
 SerialNum <- read.table("./data/raw/SerialNum.txt", header = TRUE, sep = ",")
 
 colnames(dfATS) <- c("SerialNum", "Year", "Day", "Hour", "Lat", "Long",
@@ -57,6 +57,7 @@ dfATS$Collar <- "ATS"
 
 dfTel13 <-read.table("./data/raw/telonics/Telonics2013CollarData.csv", header = TRUE, sep = ",")
 dfTel15 <-read.table("./data/raw/telonics/Telonics2015CollarData.csv", header = TRUE, sep = ",")
+
 
 
 telonics.cleanup <- function(dfTel) {
@@ -157,7 +158,7 @@ rm(junk)  # clean up
 # Clean up some of the 2013 Telonics data
 junk <- subset(dfTel13, CollarID == "IG05" & Date > "2014-10-04 00:00:00")  # Remove fixes after it was shot
 dfTel13 <- dfTel13[!row.names(dfTel13) %in% row.names(junk), ]
-
+rm(junk)
 
 
 # Add in Telonics 2013 data:
@@ -178,7 +179,7 @@ rm(dfTel13, dfTel15, dfATS, telonics.cleanup)
 
 df <- subset(df, CollarID != "IG01" & CollarID != "IG08")
 
-IG08 <- read.csv("./Data/IG08.csv")
+IG08 <- read.csv("./data/raw/telonics/IG08.csv")
 
 # **** FOR 2015 DATA --- remove the time slot from the dates
 IG08$Date <- as.character(IG08$Date)
@@ -197,7 +198,7 @@ IG08$Response <- 1
 IG08$Collar <- "Telonics"
 IG08$CollarID <- "IG08"
 
-IG01 <- read.csv("./Data/IG01.csv")
+IG01 <- read.csv("./data/raw/telonics/IG01.csv")
 
 IG01$Date <- strptime(paste(IG01$Date, IG01$Time), "%m/%d/%Y %H:%M:%S")
 IG01$Date <- as.POSIXct(IG01$Date)

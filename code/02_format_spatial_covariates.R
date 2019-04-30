@@ -99,11 +99,13 @@ writeRaster(x = lcc, filename = "data/derived/geodata/lcc.grd",
 #-------------------------------------------------------------------------------
 ## STEP 2: Format LCC raster as binary present/absent (0/1)
 
-Format.LCC <- function() {
+format.lcc <- function() {
 
   ## Create binomial rasters of each habitat class from the lcc raster. Save each
   ## as a .grd file.
 
+  rm(list=ls())  # Clear working directory to speed things up
+  
   require(snow)
   require(parallel)
   require(raster)
@@ -123,24 +125,24 @@ Format.LCC <- function() {
   # Create the rasters
 
   # Forest:
-  message("Working on Forest layer")
+  message("Working on Forest layer...")
   lcc1 <- lcc
   lcc1[lcc1 > 1] <- 0
   lcc1@data@names <- "forest"
-  writeRaster(x = lcc1, filename = paste("data/derived/geodata/Forest",
+  writeRaster(x = lcc1, filename = paste("data/derived/geodata/forest",
                                          ".grd", sep = ""),
               format = "raster",
               progress = "text",
               overwrite = T)
-  message("Saved!")
+  message("...Saved!")
 
   # Shrub:
-  message("Working on Shrub layer")
+  message("Working on Shrub layer...")
   lcc2 <- lcc
   lcc2[lcc2 != 2] <- 0
   lcc2[lcc == 2] <- 1
   lcc2@data@names <- "shrub"
-  writeRaster(x = lcc2, filename = paste("data/derived/geodata/Shrub",
+  writeRaster(x = lcc2, filename = paste("data/derived/geodata/shrub",
                                          ".grd", sep = ""),
               format = "raster",
               progress = "text",
@@ -148,69 +150,69 @@ Format.LCC <- function() {
   message("Saved!")
 
   # Tundra/Heath:
-  message("Working on Tundra/Heath layer")
+  message("Working on Tundra/Heath layer...")
   lcc3 <- lcc
   lcc3[lcc3 != 3] <- 0
   lcc3[lcc3 == 3] <- 1
   lcc3@data@names <- "tundraHeath"
-  writeRaster(x = lcc3, filename = paste("data/derived/geodata/TundraHeath",
+  writeRaster(x = lcc3, filename = paste("data/derived/geodata/tundraheath",
                                          ".grd", sep = ""),
               format = "raster",
               progress = "text",
               overwrite = T)
-  message("Saved!")
+  message("...Saved!")
 
   # Meadow:
-  message("Working on Meadow layer")
+  message("Working on Meadow layer...")
   lcc4 <- lcc
   lcc4[lcc4 != 4] <- 0
   lcc4[lcc4 == 4] <- 1
   lcc4@data@names <- "meadow"
-  writeRaster(x = lcc4, filename = paste("data/derived/geodata/Meadow",
+  writeRaster(x = lcc4, filename = paste("data/derived/geodata/meadow",
                                          ".grd", sep = ""),
               format = "raster",
               progress = "text",
               overwrite = T)
-  message("Saved!")
+  message("...Saved!")
 
   # Water:
-  message("Working on Water layer")
+  message("Working on Water layer...")
   lcc5 <- lcc
   lcc5[lcc5 != 5] <- 0
   lcc5[lcc5 == 5] <- 1
   lcc5@data@names <- "water"
-  writeRaster(x = lcc5, filename = paste("data/derived/geodata/Water",
+  writeRaster(x = lcc5, filename = paste("data/derived/geodata/water",
                                          ".grd", sep = ""),
               format = "raster",
               progress = "text",
               overwrite = T)
-  message("Saved!")
+  message("...Saved!")
 
   # Snow/Water:
-  message("Working on Snow layer")
+  message("Working on Snow layer...")
   lcc6 <- lcc
   lcc6[lcc6 != 6] <- 0
   lcc6[lcc6 == 6] <- 1
   lcc6@data@names <- "snowWater"
-  writeRaster(x = lcc6, filename = paste("data/derived/geodata/SnowWater",
+  writeRaster(x = lcc6, filename = paste("data/derived/geodata/snowWater",
                                          ".grd", sep = ""),
               format = "raster",
               progress = "text",
               overwrite = T)
-  message("Saved!")
+  message("...Saved!")
 
   # Rock:
-  message("Working on Rock layer")
+  message("Working on Rock layer...")
   lcc7 <- lcc
   lcc7[lcc7 != 7] <- 0
   lcc7[lcc7 == 7] <- 1
   lcc7@data@names <- "rock"
-  writeRaster(x = lcc7, filename = paste("data/derived/geodata/Rock",
+  writeRaster(x = lcc7, filename = paste("data/derived/geodata/rock",
                                          ".grd", sep = ""),
               format = "raster",
               progress = "text",
               overwrite = T)
-  message("Saved!")
+  message("...Saved!")
 
   # Done. Free up cores and memory:
   endCluster()
@@ -220,7 +222,7 @@ Format.LCC <- function() {
 }
 
 # Run it:
-Format.LCC()
+format.lcc()
 
 
 
@@ -243,20 +245,20 @@ raster.stack <- function() {
   aspectS <- raster("data/derived/geodata/aspectS.grd")
   vrmS <- raster("data/derived/geodata/vrmS.grd")
   sriS <- raster("data/derived/geodata/sriS.grd")
-  forest <- raster("data/derived/geodata/Forest.grd")
-  shrub <- raster("data/derived/geodata/Shrub.grd")
-  tundraHeath <- raster("data/derived/geodata/TundraHeath.grd")
-  meadow <- raster("data/derived/geodata/Meadow.grd")
-  water <- raster("data/derived/geodata/Water.grd")
-  snowWater <- raster("data/derived/geodata/SnowWater.grd")
-  rock <- raster("data/derived/geodata/Rock.grd")
+  forest <- raster("data/derived/geodata/forest.grd")
+  shrub <- raster("data/derived/geodata/shrub.grd")
+  tundraHeath <- raster("data/derived/geodata/tundraheath.grd")
+  meadow <- raster("data/derived/geodata/meadow.grd")
+  water <- raster("data/derived/geodata/water.grd")
+  snowWater <- raster("data/derived/geodata/snowwater.grd")
+  rock <- raster("data/derived/geodata/rock.grd")
 
   # Create a raster stack:
   r <- stack(elevS, elev2S, slopeS, slope2S, aspectS, vrmS, forest, shrub,
              tundraHeath, meadow, water, snowWater, rock)
 
   # Save the final raster stack as a grid (.grd) file:
-  writeRaster(r, "./data/derived/geodata/Covar.grd",
+  writeRaster(r, "./data/derived/geodata/covar.grd",
               format = "raster",
               options = c("INTERLEAVE=BAND"),
               progress = "text",
@@ -278,15 +280,17 @@ raster.stack()
 library(raster)
 
 # Load the covariate raster stack:
-Covar.30 <- stack("./data/derived/geodata/Covar.grd")
+covar <- stack("./data/derived/geodata/covar.grd")
 
-# Define the focal weight (change as needed..)
-fw <- focalWeight(Covar.30, 100, type="circle")
+
 
 # Function to run focal() across all layers in a rasterstack:
-multiFocal <- function(x, fw, ...) {
+multifocal <- function(x, focw, ...) {
   library(raster)
 
+  # Define the focal weight (change as needed..)
+  fw <- focalWeight(x, focw, type="circle")
+  
   if(is.character(x)) {
     x <- brick(x)
   }
@@ -297,68 +301,57 @@ multiFocal <- function(x, fw, ...) {
   }
 
   n <- seq(nlayers(x))
-  list <- lapply(X=n, FUN=fun, x=x, w=fw, ...)
-
+  message(paste("Calculating the focal area within a", focw, "m radius..."))
+  list <- lapply(X=n, FUN=fun, x=x, w=fw)
+  
+  names <- names(x)
+  names(list) <- paste0(names, ".", focw)
+  
   out <- stack(list)
+  
+  # message("Saving the output as a rasterstack...")
+  # writeRaster(out, paste0("./data/derived/geodata/covar.", focw, ".grd"),
+  #             format = "raster",
+  #             options = c("INTERLEAVE=BAND"),
+  #             progress = "text",
+  #             prj = T,
+  #             overwrite = T)
+  message("....Done!")
   return(out)
 }
 
 # Run it:
-Covar.100  <- multiFocal(x=Covar.30, fw)
+function() {
+  fcs <- list(50, 100)
+  
+  covar.all <- lapply(fcs, function(x) {
+    ls <- list()
+    ls[x] <- multifocal(covar, x)
+  })
+  names(covar.all) <- paste0("covar.", fcs)
+  covar.all <- stack(covar.all)
+  # Save it:
+  writeRaster(covar.all, "./data/derived/geodata/covar.all.grd",
+              format = "raster",
+              options = c("INTERLEAVE=BAND"),
+              progress = "text",
+              prj = T,
+              overwrite = T)
+  return(covar.all)
+}
 
 
-# Rename the layers for each:
-names <- names(Covar.30)
-names(Covar.30) <- paste0(names, ".30")
-names(Covar.100) <- paste0(names, ".100")
-names(Covar.500) <- paste0(names, ".500")
-names(Covar.1000) <- paste0(names, ".1000")
 
-# Save them:
-writeRaster(Covar.30, "./data/derived/geodata/Covar.30.grd",
-            format = "raster",
-            options = c("INTERLEAVE=BAND"),
-            progress = "text",
-            prj = T,
-            overwrite = T)
-writeRaster(Covar.100, "./data/derived/geodata/Covar.100.grd",
-            format = "raster",
-            options = c("INTERLEAVE=BAND"),
-            progress = "text",
-            prj = T,
-            overwrite = T)
-writeRaster(Covar.500, "./data/derived/geodata/Covar.500.grd",
-            format = "raster",
-            options = c("INTERLEAVE=BAND"),
-            progress = "text",
-            prj = T,
-            overwrite = T)
-writeRaster(Covar.1000, "./data/derived/geodata/Covar.1000.grd",
-            format = "raster",
-            options = c("INTERLEAVE=BAND"),
-            progress = "text",
-            prj = T,
-            overwrite = T)
 
-# Combine into a single raster stack:
-Covar.all <- stack(Covar.30, Covar.100, Covar.500, Covar.1000)
-
-# Save it:
-writeRaster(Covar.all, "./data/derived/geodata/Covar.all.grd",
-            format = "raster",
-            options = c("INTERLEAVE=BAND"),
-            progress = "text",
-            prj = T,
-            overwrite = T)
 
 
 #-------------------------------------------------------------------------------
 ## STEP 5. Import the raster stack containing all the covariates and save
 ## a plot of it:
 
-Covar.all <- stack("./data/derived/geodata/Covar.all.grd")
+covar.all <- stack("./data/derived/geodata/covar.all.grd")
 
 pdf("output/maps/Covariates.pdf", width = 7, height = 4, title = "Covariates")
-plot(Covar)
+plot(covar)
 dev.off()
 
