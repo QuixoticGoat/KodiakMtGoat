@@ -3,7 +3,7 @@
 # Imports and formats GPS collar data for mountain goats on Kodiak Island      #
 #                                                                              #
 # Author: McCrea Cobb <mccrea.cobb@fws.gov>                                    #
-# Last modified: 5/24/2018                                                     #
+# Last modified: 4/29/2019                                                     #
 ################################################################################
 
 
@@ -261,6 +261,6 @@ dfSp <- SpatialPointsDataFrame(df[ , c("Long", "Lat")], df,
 # Reproject into UTM NAD83, Zone 5N:
 dfSp <- spTransform(dfSp, CRS("+proj=utm +zone=5 +datum=NAD83"))
 
-save(dfSp, file="./data/derived/dfSp.Rdata", compress="gzip")
+save(dfSp, file="./data/derived/geodata/dfSp.Rdata", compress="gzip")
 rm(dfSp)
 

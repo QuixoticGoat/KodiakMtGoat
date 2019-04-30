@@ -6,7 +6,7 @@
 # to quantify resource selection.                                              #
 #                                                                              #
 # Author: McCrea Cobb <mccrea.cobb@fws.gov>                                    #
-# Last modified: 5/24/2018                                                     #
+# Last modified: 4/29/2019                                                     #
 ################################################################################
 
 ## ---- 4_ConditionalRSFmodel.R
