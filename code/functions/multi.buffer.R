@@ -27,7 +27,6 @@ multi.buffer <- function(df, d, nr) {
   
   # Erase the inner portions of the buffered points:
   f <- lapply(2:length(b), function(i) {
-    #foo <- list()
     ls <- 1:length(b[[1]])
     f1 <- lapply(ls, function(x) {  # Create the ring for a single buffered distance
       gDifference(b[[i]][x,], b[[i-1]][x,])

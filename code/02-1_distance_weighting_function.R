@@ -106,50 +106,9 @@ MakeVarW = function(dataLandscape, dataArea, sList, fW, A, distMax) {
 
 ## Runs the MakeVarW() function on the Kodiak goat data.
 
-###############################################################
-## Make buffered rings around the fixes(50-1000 m @ 50 m intervals). 
-## I tried to do this in R using gBuffer() but it was slooooooooooow. 
-## Then, I calculated the area of each ring and added as variables.
-## Below is the abandoned code for buffering in R.
 
 
-# From: https://gis.stackexchange.com/questions/194848/creating-outside-only-buffer-around-polygon-using-r
 
-
-multi.buffer <- function(df, d, nr) {
-  # Takes a spatial dataframe (df) and outputs a list of spatial polygons
-  # containing buffered rings (donuts) extending from the points  
-  # in the spatial dataframe.
-  
-  # df = a spatial dataframe of point locations, projected in UTMs
-  # d = distance buffered between individual rings
-  # x = # of rings
-  
-  library(raster)
-  library(rgeos)
-  library(rlist)
-  
-  # Create a list of buffered spatial polygons:
-  b <- lapply(1:nr, function(x) {
-    buffer(df, width=d*x, dissolve=F)
-  })
-  
-  # Erase the inner portions of the buffered points:
-  f <- lapply(2:length(b), function(i) {
-    #foo <- list()
-    ls <- 1:length(b[[1]])
-    f1 <- lapply(ls, function(x) {  # Create the ring for a single buffered distance
-      gDifference(b[[i]][x,], b[[i-1]][x,])
-    })
-    f2 <- do.call(bind, f1)  # Combine the indiv. sp. polys for each pt. into a sp. poly for each ring
-  })
-  
-  f <- rlist::list.append(f, b[[1]])  # add in the central buffered circle
-  
-  #f <- do.call(bind, f)  # combine the list of sp. polys for each ring into a single sp. poly
-  
-  return(f)
-}
 
 
 #-------------------------------------------------------------------------------
