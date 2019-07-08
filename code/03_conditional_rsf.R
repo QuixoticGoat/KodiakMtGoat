@@ -16,7 +16,6 @@
 load("./data/derived/df.Rdata")
 
 
-
 #-------------------------------------------------------------------------------
 ## STEP 1: Create a dataset of "available" points. 10 points associated with
 ## each GPS fix.
@@ -59,7 +58,12 @@ get.traj <- function(df) {
     ## Function to create a trajectory object
 
     dat <- dat[complete.cases(dat[, c("x", "y", "Date")]), ]
-    traj <- adehabitatLT::as.ltraj(dat[, c("x", "y")], date = dat$Date, id = dat$CollarID,
+    traj <- adehabitatLT::as.ltraj(dat[, c("x", "y")], 
+                                   date = dat$Date, 
+                                   id = dat$CollarID,
+                                   infolocs = data.frame(sex = dat$sex,
+                                                         season = dat$season,
+                                                         collar = dat$Collar),
                                    proj4string = CRS("+proj=utm +zone=5 +datum=NAD83 +units=m +no_defs +ellps=GRS80 +towgs84=0,0,0"))
     return(traj)
   }
@@ -75,7 +79,7 @@ df.traj.tel <- get.traj(droplevels(subset(df, Collar == "Telonics")))
 
 
 # Load study area mask:
-load("./data/geodata/KodiakBound/StudyArea.RData")
+load("./data/derived/geodata/study_area.RData")
 
 
 ## B. Draw 10 random "available" steps for each "used" step (takes a little time..)
@@ -91,8 +95,29 @@ rm(df.ua.ats, df.ua.tel)
 df$utmE <- df$x + df$dx
 df$utmN <- df$y + df$dy
 
-# Save the results:
+# Subset only the variables needed:
+df <- data.frame(id=df$id,
+                  utmE=df$utmE,
+                  utmN=df$utmN,
+                  date=df$date,
+                  season=df$season,
+                  sex=df$sex,
+                  case=df$case)
+
+  # Save the resulting dataframe as Rdata:
 save(data = df, file = "./data/derived/df.ua.Rdata")
+
+# Save as a spatial dataframe and shapefile:
+dfSp <- SpatialPointsDataFrame(df[ ,c("utmE", "utmN")], df,
+                         proj4string = CRS("+proj=utm +zone=5 +datum=NAD83"))
+
+save(dfSp, file="./data/derived/geodata/dfSp.ua.Rdata")
+
+#Save as a shapefile:
+rgdal::writeOGR(obj=dfSp, dsn="./data/derived/geodata/dfSp.ua_shp", 
+                layer="dfSp", 
+                driver="ESRI Shapefile", 
+                overwrite_layer=T)
 
 
 
@@ -123,7 +148,6 @@ df <- cbind(df, dfTemp) ; rm(dfTemp)
 save(df, file="./data/derived/df.cond.RData", compress="gzip")
 
 
-
 #------------------------------------------------------------------------------
 ## STEP 3. Split data into testing/training datasets
 
@@ -147,8 +171,7 @@ test.train.fn <- function(df, p) {
 }
 # Run it and save:
 dfTestTrain <- test.train.fn(df, 0.80)
-save(data = dfTestTrain, file = "./data/derived/df.testtrain.Rdata",
-     compress = "gzip")
+save(data = dfTestTrain, file = "./data/derived/df.testtrain.Rdata")
 
 
 
