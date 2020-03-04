@@ -30,7 +30,7 @@ Imports and formats spatial covariate shapefiles and rasters. Scales covariates 
 *ExtractCovVelox.R*  
 Defines "available" fixes for standard RSF modeling by creating a 99% kernel density spatial polygon, using all fixes. Generates a random sample of fixes within the polygon and combines these data to the "used" GPS location dataframe, called dfRSF. Imports a raster stack of habitat covariates. Extract the covariate data from the raster stack to the used/available data. Export the result as a shapefile.
 
-*ConditionalRSFmodel.R* 
+*ConditionalRSFmodel.R*  
 Step 1: Examines resource selection based on mixed effects conditional logistic regression (CollarID as a random effect). To do this, it first creates a two trajectory objects using the "used" GPS locations (one for ATS collars, one for Telonics collars) that include the length of each move, the time interval between successive relocations and other values. Load a study area boundary (mask). Draws 10 random "available" steps within the study area bounday for each "used" step from a distribution of used fix step lengths and turning angles. Merges the ATS and Telonics datasets back together. Calculates the available fix coordinates from the random step lengths and turning angles. Saves the results.  
 
 Step 2: Extracts spatial covariates raster values to the used and available fixes. Loads the used/available dataframe and the raster stack with the covariates. Converts the dataframe to a spatial dataframe. Extracts the covariate values to the used/available spatial data frame and saves the results as a dataframe.  
